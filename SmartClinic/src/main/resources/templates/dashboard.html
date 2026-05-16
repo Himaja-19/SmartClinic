@@ -1,0 +1,172 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <title>SmartClinic - Dashboard</title>
+    <link rel="stylesheet"
+          href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css">
+    <style>
+        body { background: #f0f4f8; }
+        .card { border: none; border-radius: 16px; box-shadow: 0 4px 16px rgba(0,0,0,0.08); }
+        .stat-card { border-radius: 16px; color: white; padding: 20px; text-align: center; }
+    </style>
+</head>
+<body>
+<nav class="navbar navbar-dark bg-primary mb-4">
+    <div class="container">
+        <a class="navbar-brand fw-bold fs-4" href="/">🏥 SmartClinic</a>
+        <div class="navbar-nav ms-auto d-flex flex-row gap-3">
+            <a class="nav-link text-white" href="/">Home</a>
+            <a class="nav-link text-white" href="/patients">Patients</a>
+            <a class="nav-link text-white" href="/appointments">Appointments</a>
+            <a class="nav-link text-white fw-bold" href="/dashboard">Dashboard</a>
+        </div>
+    </div>
+</nav>
+
+<div class="container">
+    <h3 class="mb-4 fw-bold">📊 Admin Dashboard</h3>
+
+    <!-- Stats Row -->
+    <div class="row g-3 mb-4">
+        <div class="col-md-3">
+            <div class="stat-card" style="background: linear-gradient(135deg,#1a73e8,#0d47a1)">
+                <div class="fs-1 fw-bold" th:text="${patients.size()}">0</div>
+                <div>👤 Total Patients</div>
+            </div>
+        </div>
+        <div class="col-md-3">
+            <div class="stat-card" style="background: linear-gradient(135deg,#2e7d32,#1b5e20)">
+                <div class="fs-1 fw-bold" th:text="${appointments.size()}">0</div>
+                <div>📅 Appointments</div>
+            </div>
+        </div>
+        <div class="col-md-3">
+            <div class="stat-card" style="background: linear-gradient(135deg,#f57c00,#e65100)">
+                <div class="fs-1 fw-bold" th:text="${doctors.size()}">0</div>
+                <div>🩺 Doctors</div>
+            </div>
+        </div>
+        <div class="col-md-3">
+            <div class="stat-card" style="background: linear-gradient(135deg,#7b1fa2,#4a148c)">
+                <div class="fs-1 fw-bold"
+                     th:text="${#lists.size(appointments.?[status == 'Scheduled'])}">0</div>
+                <div>⏳ Scheduled</div>
+            </div>
+        </div>
+    </div>
+
+    <div class="row g-4">
+        <!-- Doctors Table -->
+        <div class="col-md-5">
+            <div class="card">
+                <div class="card-header bg-white py-3">
+                    <h5 class="mb-0">🩺 Doctors
+                        <span class="badge bg-warning text-dark ms-2"
+                              th:text="${doctors.size()}">0</span>
+                    </h5>
+                </div>
+                <div class="card-body p-0">
+                    <table class="table table-hover align-middle mb-0">
+                        <thead class="table-light">
+                            <tr>
+                                <th>#</th>
+                                <th>Name</th>
+                                <th>Specialization</th>
+                                <th>Available</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr th:each="d, stat : ${doctors}">
+                                <td class="text-muted small" th:text="${stat.index + 1}"></td>
+                                <td class="fw-semibold" th:text="${d.name}"></td>
+                                <td><small class="text-muted" th:text="${d.specialization}"></small></td>
+                                <td><small class="text-success" th:text="${d.availableDays}"></small></td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+
+            <!-- Patients Table -->
+            <div class="card mt-4">
+                <div class="card-header bg-white py-3">
+                    <h5 class="mb-0">👤 Patients
+                        <span class="badge bg-primary ms-2"
+                              th:text="${patients.size()}">0</span>
+                    </h5>
+                </div>
+                <div class="card-body p-0">
+                    <table class="table table-hover align-middle mb-0">
+                        <thead class="table-light">
+                            <tr><th>#</th><th>Name</th><th>Age</th><th>Phone</th></tr>
+                        </thead>
+                        <tbody>
+                            <tr th:each="p, stat : ${patients}">
+                                <td class="text-muted small" th:text="${stat.index + 1}"></td>
+                                <td class="fw-semibold" th:text="${p.name}"></td>
+                                <td th:text="${p.age}"></td>
+                                <td><small th:text="${p.phone}"></small></td>
+                            </tr>
+                            <tr th:if="${patients.empty}">
+                                <td colspan="4" class="text-center text-muted py-3">No patients yet.</td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+
+        <!-- All Appointments Table -->
+        <div class="col-md-7">
+            <div class="card">
+                <div class="card-header bg-white py-3 d-flex justify-content-between align-items-center">
+                    <h5 class="mb-0">📅 All Appointments</h5>
+                    <span class="badge bg-success rounded-pill"
+                          th:text="${appointments.size()}">0</span>
+                </div>
+                <div class="card-body p-0">
+                    <div class="table-responsive">
+                        <table class="table table-hover align-middle mb-0">
+                            <thead class="table-light">
+                                <tr>
+                                    <th>#</th>
+                                    <th>Patient</th>
+                                    <th>Doctor</th>
+                                    <th>Date</th>
+                                    <th>Status</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <tr th:each="a, stat : ${appointments}">
+                                    <td class="text-muted small" th:text="${stat.index + 1}"></td>
+                                    <td class="fw-semibold" th:text="${a.patientName}"></td>
+                                    <td th:text="${a.doctorName}"></td>
+                                    <td th:text="${a.appointmentDate}"></td>
+                                    <td>
+                                        <span th:text="${a.status}"
+                                              th:class="${a.status == 'Scheduled'} ? 'badge bg-primary' :
+                                                         (${a.status == 'Completed'} ? 'badge bg-success' :
+                                                         'badge bg-danger')">
+                                        </span>
+                                    </td>
+                                </tr>
+                                <tr th:if="${appointments.empty}">
+                                    <td colspan="5" class="text-center text-muted py-4">
+                                        No appointments yet.
+                                    </td>
+                                </tr>
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<footer class="text-center text-muted mt-5 py-3">
+    <small>SmartClinic v1.0 | Built with Spring Boot + MySQL + Bootstrap</small>
+</footer>
+</body>
+</html>
